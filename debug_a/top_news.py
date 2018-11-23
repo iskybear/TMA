@@ -34,7 +34,6 @@ def get_top_news(news, top=30):
     top_news = [x[1] for x in ranker.rank(top=top+30)]
 
     for i, new in enumerate(top_news):
-        print(i)
         for j in range(i + 1, len(top_news)):
             distance = fuzz.ratio(new, top_news[j])
             if distance > 80:
@@ -46,3 +45,9 @@ def get_top_news(news, top=30):
 
 if __name__ == '__main__':
     news = get_news()
+    top_news = get_top_news(news, top=30)
+    for i, new in enumerate(top_news):
+        print(i+1, "=" * 68, "\n", new, "\n")
+
+
+
