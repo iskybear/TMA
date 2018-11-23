@@ -127,6 +127,9 @@ class TfidfDocRank(BaseRank):
         self.documents = documents
         self.N = N
 
+        # doc 平均长度
+        self.mean_length = sum([len(doc) for doc in documents]) / len(documents)
+
     def data_prepare(self):
         docs = self.documents
         # 清理数字、字母
@@ -140,9 +143,9 @@ class TfidfDocRank(BaseRank):
         docs = [re.sub("[%s]" % punc, "", x) for x in docs]
         return docs
 
-    @staticmethod
-    def mean_tfidf(doc, top_k=None):
+    def mean_tfidf(self, doc, top_k=None):
         """计算doc的词均tfidf值"""
+        doc_length = len(doc)
         kw = jieba.analyse.extract_tags(doc, topK=None, withWeight=True)
         if len(kw) >= top_k:
             kw = kw[:top_k]
@@ -150,7 +153,7 @@ class TfidfDocRank(BaseRank):
             for i in range(top_k - len(kw)):
                 kw.append(kw[-1])
         total = sum([x[1] for x in kw])
-        return total / len(kw)
+        return total / len(kw) * (self.mean_length / doc_length)
 
     def rank(self, top=None, reverse=True):
         docs = self.data_prepare()
