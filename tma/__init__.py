@@ -4,7 +4,7 @@ import os
 # 元信息
 # --------------------------------------------------------------------
 __name__ = 'tma'
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __author__ = "zengbin"
 
 
@@ -42,14 +42,14 @@ logger = create_logger(log_file, name='tma', cmd=True)
 # --------------------------------------------------------------------
 from tma.pool import StockPool
 from tma.account import Account
-from tma.rules import RULES
+from tma.rules import Rules
 from tma import selector
 from tma import monitor
 from tma import analyst
 from tma import indicator
+from tma.utils import OrderedAttrDict
 from tma.utils import Calendar
-from tma.utils import (trade_calendar, is_in_trade_time,
-                       is_trade_day, get_recent_trade_days)
+from tma.analyst.rank import TfidfDocRank, WeekRank
 
 # module介绍
 # --------------------------------------------------------------------
