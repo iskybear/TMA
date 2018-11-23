@@ -73,7 +73,7 @@ def get_announcements(code, start_date=None, end_date=None):
     :param code: str
         股票代码，如：600122
     :param start_date: str
-        开始时间，如："2017-08-10"，默认值为今日想前推三十天的日期
+        开始时间，如："2017-08-10"，默认值为今日向前推三十天的日期
     :param end_date: str
         结束时间，如："2018-08-10"，默认值为今日日期
     :return: announcements

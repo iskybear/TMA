@@ -10,7 +10,6 @@ collector.szse - 采集深圳证券交易所的数据
 import pandas as pd
 
 
-#
 # --------------------------------------------------------------------
 
 def get_index_shares(code):

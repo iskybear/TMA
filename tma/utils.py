@@ -7,6 +7,7 @@ import tushare as ts
 import pandas as pd
 import warnings
 from datetime import datetime
+from collections import OrderedDict
 from zb.tools import pdf
 
 from tma import DATA_PATH
@@ -154,3 +155,19 @@ def code_verify(code):
 # 提取pdf中的文本
 # --------------------------------------------------------------------
 pdf2text = pdf.pdf2text
+
+
+class OrderedAttrDict(OrderedDict):
+    """可以通过 . 访问的有序字典"""
+    def __init__(self, *args, **kwargs):
+        super(OrderedAttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
+def convert_bool(condition):
+    """True = 1, False = 0"""
+    if condition:
+        return 1
+    else:
+        return 0
+

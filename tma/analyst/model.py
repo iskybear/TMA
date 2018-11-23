@@ -14,7 +14,7 @@ from tma.indicator import ShareDayIndicator
 # 爬楼梯模型
 # --------------------------------------------------------------------
 class ClimbStairs:
-    """爬楼梯模型实现"""
+    """爬楼梯模型"""
 
     def __init__(self, code, stair_prices=None):
         """

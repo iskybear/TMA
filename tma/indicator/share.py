@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 from collections import OrderedDict
 
-from tma.collector import klines, ticks, get_price, bars
+from tma.collector import klines, ticks, bars
 
 
 class ShareDayIndicator(object):
