@@ -146,6 +146,15 @@ class TfidfDocRank(BaseRank):
     def mean_tfidf(self, doc, top_k=None):
         """计算doc的词均tfidf值"""
         doc_length = len(doc)
+        # punish 范围：0.1 ~ 3 
+        punish = 1 / (self.mean_length / doc_length)
+        if punish < 0.1:
+            punish = 0.1
+        elif punish > 3:
+            punish = 3
+        else:
+            punish = punish
+
         kw = jieba.analyse.extract_tags(doc, topK=None, withWeight=True)
         if len(kw) >= top_k:
             kw = kw[:top_k]
@@ -153,13 +162,16 @@ class TfidfDocRank(BaseRank):
             for i in range(top_k - len(kw)):
                 kw.append(kw[-1])
         total = sum([x[1] for x in kw])
-        return total / len(kw) * (self.mean_length / doc_length)
+        mean_tfidf = total / len(kw)
+        return mean_tfidf * punish
 
     def rank(self, top=None, reverse=True):
         docs = self.data_prepare()
+
         results = [(self.mean_tfidf(doc, top_k=self.N), self.documents[i])
                    for i, doc in enumerate(docs)]
         results = sorted(results, key=lambda x: x[0], reverse=reverse)
+
         if not top:
             return results
         else:
