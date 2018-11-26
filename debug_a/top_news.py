@@ -2,10 +2,15 @@
 import sys
 sys.path.insert(0, r"C:\ZB\git_repo\zengbin93\TMA")
 
+from datetime import datetime, timedelta
+import time
 import tushare as ts
 from fuzzywuzzy import fuzz
+from apscheduler.schedulers.background import BackgroundScheduler
+
 import tma
 
+key = "SCU10748T12f471f07094648d297222fc649e374d598bf38bc81fd"
 pro = ts.pro_api()
 
 
@@ -43,11 +48,38 @@ def get_top_news(news, top=30):
     return top_news[:top]
 
 
+@tma.push2wx(send_key=key, by="server_chan")
+def report_news():
+    cur_t = datetime.now()
+    title = "最近6小时最重要的20条快讯 | %s" % cur_t.__str__().split('.')[0]
+    six_h = timedelta(hours=6)
+    pre_t = cur_t - six_h
+
+    news = get_news(start_date=pre_t.__str__(), end_date=cur_t.__str__())
+    top_news = get_top_news(news, top=20)
+
+    content = ""
+    for i, new in enumerate(top_news, 1):
+        c = "\n### **第%i条快讯**\n --- \n%s\n\n" % (i, new)
+        content += c
+
+    return title, content.strip()
+
+
+def main():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=report_news, trigger="cron", hour='2,8,14,20,',
+                      minute='0', day='*', next_run_time=datetime.now())
+    scheduler.start()
+    try:
+        while 1:
+            time.sleep(100000)
+    except KeyboardInterrupt:
+        scheduler.shutdown()
+
+
 if __name__ == '__main__':
-    news = get_news()
-    top_news = get_top_news(news, top=30)
-    for i, new in enumerate(top_news):
-        print(i+1, "=" * 68, "\n", new, "\n")
+    main()
 
 
 
