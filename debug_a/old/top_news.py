@@ -14,7 +14,7 @@ key = "SCU10748T12f471f07094648d297222fc649e374d598bf38bc81fd"
 pro = ts.pro_api()
 
 
-def get_news(start_date='2018-11-22 09:00:00', end_date='2018-11-22 12:00:00'):
+def get_news(start_date, end_date):
     """
     如果是某一天的数据，可以输入日期 20181120 或者 2018-11-20，
     比如要想取2018年11月20日的新闻，可以设置start_date='20181120',

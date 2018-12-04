@@ -4,7 +4,6 @@
 Tushare数据接口封装
 ====================================================================
 """
-import requests
 import os
 import time
 from datetime import datetime
@@ -14,43 +13,9 @@ import tushare as ts
 
 from tma import DATA_PATH
 
-TS_PRO_API = "http://api.tushare.pro"
 FILE_TOKEN = os.path.join(DATA_PATH, "tushare_pro.token")
 
-
-def set_token(token):
-    with open(FILE_TOKEN, 'w') as f:
-        f.write(token)
-
-
-def query_pro(api_name, fields='', **kwargs):
-    """通过 tushare pro api 获取数据
-
-    :param api_name: str
-    :param fields: list
-    :return: pd.DataFrame
-    """
-    if not os.path.exists(FILE_TOKEN):
-        raise EnvironmentError("%s 文件不存在，请先调用"
-                               "set_token()配置token" % FILE_TOKEN)
-    with open(FILE_TOKEN, 'r') as f:
-        token = f.readline()
-
-    req_params = {
-        'api_name': api_name,
-        'token': token,
-        'params': kwargs,
-        'fields': fields
-    }
-
-    result = requests.post(TS_PRO_API, json=req_params).json()
-    if result['code'] != 0:
-        raise Exception(result['msg'])
-    else:
-        data = result['data']
-        columns = data['fields']
-        items = data['items']
-        return pd.DataFrame(items, columns=columns)
+pro = ts.pro_api()
 
 
 # --------------------------------------------------------------------
@@ -239,9 +204,6 @@ def get_today_market(filters=None, save=True,
     return tm
 
 
-today_market = get_today_market
-
-
 def get_hist_market(date):
     """历史行情数据
 
@@ -254,9 +216,27 @@ def get_hist_market(date):
     return hm
 
 
-hist_market = get_hist_market
-
 # 融资融券
 # --------------------------------------------------------------------
 # tushare接口： sh_margins | sh_margin_details 
 #              sz_margins | sz_margin_details
+
+
+def get_news(start_date, end_date):
+    """
+    如果是某一天的数据，可以输入日期 20181120 或者 2018-11-20，
+    比如要想取2018年11月20日的新闻，可以设置start_date='20181120',
+    end_date='20181121' （大于数据一天）
+
+    如果是加时间参数，可以设置：start_date='2018-11-20 09:00:00',
+    end_date='2018-11-20 22:05:03'
+    """
+    sources = ["sina", "wallstreetcn", "10jqka", "eastmoney", "yuncaijing"]
+
+    news = []
+    for src in sources:
+        df = pro.news(src=src, start_date=start_date, end_date=end_date)
+        for i, row in df.iterrows():
+            new = row["title"].strip() + row["content"].strip()
+            news.append(new)
+    return news

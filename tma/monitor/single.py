@@ -80,7 +80,7 @@ def sm_limit(code, kind, threshold=10000, interval=1):
 
 def get_shares_status(codes):
     shares = [ShareDayIndicator(code) for code in codes]
-    share_status_template = "### {code}（{name}）\n --- \n" \
+    share_status_template = "### **{code}（{name}）**\n --- \n" \
                             "* 当前价格为{price}元\n" \
                             "* 涨跌幅{change_rate}\n" \
                             "* 振幅{wave_rate}\n" \

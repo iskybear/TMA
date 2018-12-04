@@ -6,6 +6,7 @@
 
 from tma.indicator import MarketDayIndicator
 from tma.collector.ts import get_indices
+from tma.collector.ths import get_plate_fund_flow
 
 
 def get_market_status():
@@ -13,7 +14,7 @@ def get_market_status():
     mi = MarketDayIndicator()
     mi.update()
 
-    market_status_template = "### 实时市场状态\n --- \n" \
+    market_status_template = "### **实时市场状态**\n --- \n" \
                              "* 今日开盘个股总数为{M002}家，上涨个股数量为{M003}家，**赚钱效应{M001}**；" \
                              "其中涨3个点以上个股数量是{M004}家，跌3个点以上个股数量是{M005}家。\n" \
                              "* 换手率前50只个股赚钱效应{M006}，其中涨3个点以上个股数量是{M007}家，" \
@@ -54,8 +55,10 @@ def get_indices_status(selected=None):
         selected = ["上证指数", "创业板指", "深证成指", "中小板指",
                     "沪深300", "上证50", "中证500", "上证380"]
     indices = get_indices()
-    msg_index_head = "### 指数走势 \n"
-    msg_index_template = """* {0}，涨幅{1}，振幅{2}；\n"""
+    msg_index_head = "### **指数走势** \n--- \n" \
+                     "|指数名称|涨幅|振幅|\n" \
+                     "|:---:|:---:|:---:|\n"
+    msg_index_template = """|{0}|{1}|{2}|\n"""
 
     msg_index = [msg_index_head]
 
@@ -70,3 +73,38 @@ def get_indices_status(selected=None):
 
     msg_index = ''.join(msg_index) + '\n'
     return msg_index
+
+
+def get_top_plate(top=6):
+    """获取今天的涨幅靠前的概念板块、行业板块
+
+    :param top: int
+    :return: str
+    """
+    hy = get_plate_fund_flow('hyzjl')
+    gn = get_plate_fund_flow('gnzjl')
+
+    # 行业资金流 Top
+    hy.sort_values('涨跌幅', ascending=False, inplace=True)
+    hy_top = "### **行业板块涨幅前%s名** \n--- \n " \
+             "|行业|涨跌幅|资金净额（亿）|股票数量|领涨股|\n" \
+             "|:---:|:---:|:---:|:---:|:---:|\n" % top
+    for i in range(top):
+        row = hy.iloc[i, :]
+        row_info = "|%s|%s|%s|%s|%s|\n" % (row['行业'], row['涨跌幅'],
+                                           row['净额(亿)'], row['公司家数'], row['领涨股'])
+        hy_top += row_info
+
+    # 概念资金流 Top
+    gn.sort_values('涨跌幅', ascending=False, inplace=True)
+    gn_top = "### **概念板块涨幅前%s名** \n--- \n " \
+             "|行业|涨跌幅|资金净额（亿）|股票数量|领涨股|\n" \
+             "|:---:|:---:|:---:|:---:|:---:|\n" % top
+    for i in range(top):
+        row = gn.iloc[i, :]
+        row_info = "|%s|%s|%s|%s|%s|\n" % (row['行业'], row['涨跌幅'],
+                                           row['净额(亿)'], row['公司家数'], row['领涨股'])
+        gn_top += row_info
+
+    return gn_top + hy_top
+

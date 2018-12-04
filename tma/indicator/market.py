@@ -8,7 +8,7 @@ indicator.market - A股市场指标计算
 import pandas as pd
 from collections import OrderedDict
 
-from tma.collector import today_market
+from tma.collector.ts import get_today_market
 from tma.indicator.meta import check_indicator_meta
 
 
@@ -22,9 +22,9 @@ class MarketDayIndicator(object):
     # --------------------------------------------------
     def _get_market(self, use_exists=True):
         if not use_exists:
-            self.m = today_market(filters=['tp'], use_latest=False)
+            self.m = get_today_market(filters=['tp'], use_latest=False)
         if self.m is None:
-            m = self.m = today_market(filters=['tp'], use_latest=True)
+            m = self.m = get_today_market(filters=['tp'], use_latest=True)
         else:
             m = self.m
         return m

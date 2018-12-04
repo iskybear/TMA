@@ -47,6 +47,7 @@ from tma import selector
 from tma import monitor
 from tma import analyst
 from tma import indicator
+from tma.sms import push2wx, send_email
 from tma.utils import OrderedAttrDict
 from tma.utils import Calendar
 from tma.analyst.rank import TfidfDocRank, WeekRank

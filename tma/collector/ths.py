@@ -125,7 +125,7 @@ def get_plate_fund_flow(kind):
 
         col_nums = 11
         row_nums = int(len(cells) / col_nums)
-        col_names = cells[0: 11]
+        # col_names = cells[0: 11]
         for x in range(1, row_nums):
             results.append(cells[x * col_nums: (x + 1) * col_nums])
 
@@ -134,6 +134,9 @@ def get_plate_fund_flow(kind):
             break
         else:
             i += 1
+    col_names = ['序号', '行业', '行业指数', '涨跌幅', '流入资金(亿)',
+                 '流出资金(亿)', '净额(亿)', '公司家数', '领涨股',
+                 '领涨股-涨跌幅', '领涨股-当前价(元)']
     return pd.DataFrame(results, columns=col_names)
 
 
