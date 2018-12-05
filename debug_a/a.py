@@ -19,7 +19,7 @@ from tma.collector.ts import get_news
 
 class Config:
     server_chan_key = "SCU10748T12f471f07094648d297222fc649e374d598bf38bc81fd"
-    bear_send_key = ""
+    bear_send_key = "5213-7604b2b607bcf76c7ebb875e2ca2eded"
 
 
 conf = Config()
@@ -67,8 +67,8 @@ def shares_status_inform(codes):
 def report_news():
     """推送快讯"""
     cur_t = datetime.now()
-    title = "最近6小时最重要的20条快讯 | %s" % cur_t.__str__().split('.')[0]
-    six_h = timedelta(hours=6)
+    title = "最近12小时最重要的20条快讯 | %s" % cur_t.__str__().split('.')[0]
+    six_h = timedelta(hours=12)
     pre_t = cur_t - six_h
 
     news = get_news(start_date=pre_t.__str__(), end_date=cur_t.__str__())
@@ -87,7 +87,7 @@ def main():
 
     # 收盘报告
     scheduler.add_job(func=after_close_report, trigger="cron",
-                      hour='19', day_of_week='mon-fri',
+                      hour='15', day_of_week='mon-fri',
                       next_run_time=datetime.now())
 
     # 交易时段的个股行情推送
@@ -100,7 +100,7 @@ def main():
                       hour='10,11,13,14', day_of_week='mon=fri')
 
     # 推送新闻快讯
-    scheduler.add_job(func=report_news, trigger="cron", hour='2,8,14,20,',
+    scheduler.add_job(func=report_news, trigger="cron", hour='10,22,',
                       minute='0', day='*', next_run_time=datetime.now())
 
     scheduler.start()
