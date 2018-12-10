@@ -6,6 +6,8 @@ A股相关信息推送任务
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 import time
+import sys
+sys.path.insert(0, '../')
 
 from tma.monitor.market import get_market_status
 from tma.monitor.market import get_indices_status
@@ -57,7 +59,8 @@ def market_status_inform():
 
 @run_at_trade_time
 @push2wx(send_key=conf.server_chan_key, by='server_chan')
-def shares_status_inform(codes):
+def shares_status_inform():
+    codes = ['600122', '600682', '002256', '600172', '000908', '600141']
     title = "个股行情播报 - %s" % datetime.now().__str__().split(".")[0]
     content = get_shares_status(codes)
     return title, content
@@ -100,8 +103,8 @@ def main():
                       hour='10,11,13,14', day_of_week='mon=fri')
 
     # 推送新闻快讯
-    scheduler.add_job(func=report_news, trigger="cron", hour='10,22,',
-                      minute='0', day='*', next_run_time=datetime.now())
+    scheduler.add_job(func=report_news, trigger="cron", hour='10,22',
+                      day='*', next_run_time=datetime.now())
 
     scheduler.start()
     try:
