@@ -11,9 +11,7 @@ from datetime import datetime
 import pandas as pd
 import tushare as ts
 
-from tma import DATA_PATH
-
-FILE_TOKEN = os.path.join(DATA_PATH, "tushare_pro.token")
+from tma import data_path
 
 pro = ts.pro_api()
 
@@ -22,7 +20,7 @@ pro = ts.pro_api()
 
 def get_market_basic(cache=True, use_cache=False):
     """返回A股所有股票的基础信息"""
-    FILE_BASIC = os.path.join(DATA_PATH, "market_basic.csv")
+    FILE_BASIC = os.path.join(data_path, "market_basic.csv")
 
     if os.path.exists(FILE_BASIC):
         now_t = time.time()
@@ -185,7 +183,7 @@ def get_today_market(filters=None, save=True,
     """
     if filters is None:
         filters = ['tp']
-    tm_csv = os.path.join(DATA_PATH, 'latest_market.csv')
+    tm_csv = os.path.join(data_path, 'latest_market.csv')
     if use_latest and os.path.exists(tm_csv) \
             and time.time() - os.path.getmtime(tm_csv) < interval:
         tm = pd.read_csv(tm_csv, encoding='utf-8')

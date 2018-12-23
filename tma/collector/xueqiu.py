@@ -176,7 +176,7 @@ def _get_sub_comments(comment_id):
     for r in res:
         com = {
             "timestamp": r['created_at'],
-            "ip": r['created_ip'],
+            "ip": r.get('created_ip', None),
             "text": BeautifulSoup(r['text'], 'lxml').text,
             "source": r['source'],
         }

@@ -8,7 +8,7 @@ setup(
     name=tma.__name__,
     version=tma.__version__,
     keywords=(
-        "A股", "xueqiu", "雪球", "TuShare", "交易数据分析", "三级股票池", "仿真交易",
+        "A股", "TuShare", "交易数据分析", "三级股票池", "仿真交易",
         "A股数据采集"
     ),
     description="Tools for Market A - A股工具集",
@@ -22,7 +22,7 @@ setup(
     packages=find_packages(exclude=['test', 'doc', 'img']),
     include_package_data=True,
     install_requires=[
-        "tushare", "pandas", "requests", "zb", "retrying", "numpy",
+        "tushare", "pandas", "requests", "zb", "numpy",
         "bs4", "jieba"
     ],
     python_requires=">=3",

@@ -9,7 +9,7 @@ from collections import OrderedDict
 import json
 import pandas as pd
 
-from tma import POOL_PATH
+from tma import data_path
 from tma.collector import bars
 
 
@@ -19,7 +19,7 @@ class StockPool:
     def __init__(self, name, pool_path=None):
         self.name = name
         if pool_path is None:
-            self.pool_path = POOL_PATH
+            self.pool_path = data_path
         else:
             self.pool_path = pool_path
 

@@ -8,3 +8,4 @@ pandas
 requests
 zb
 jieba
+textrank4zh

@@ -14,6 +14,7 @@ from tma.indicator.meta import check_indicator_meta
 
 class MarketDayIndicator(object):
     """A股全市场单个交易日的指标体系"""
+
     def __init__(self):
         self.features = OrderedDict()
         self.m = None
@@ -123,7 +124,7 @@ class MarketDayIndicator(object):
 
         df_la = pd.DataFrame(la)
         df_la = df_la[['code', 'name', 'trade', 'open', 'high', 'low',
-                        'kind', 'changepercent']]
+                       'kind', 'changepercent']]
         df_la = df_la.sort_values('kind')
 
         la_count = OrderedDict(df_la['kind'].value_counts())
@@ -170,6 +171,3 @@ class MarketDayIndicator(object):
         self.cal_total_market()
         self.cal_turnover_top50()
         self.cal_limit_arrived()
-
-
-

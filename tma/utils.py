@@ -10,12 +10,12 @@ from datetime import datetime
 from collections import OrderedDict
 from zb.tools import pdf
 
-from tma import DATA_PATH
+from tma import data_path
 
 # A股交易日历
 # --------------------------------------------------------------------
 
-FILE_CALENDAR = os.path.join(DATA_PATH, 'calendar.csv')
+FILE_CALENDAR = os.path.join(data_path, 'calendar.csv')
 if os.path.exists(FILE_CALENDAR) and \
         time.time() - os.path.getmtime(FILE_CALENDAR) < 3600 * 24:
     trade_calendar = pd.read_csv(FILE_CALENDAR, encoding='utf-8')
@@ -138,18 +138,6 @@ def run_at_trade_time(func):
         return res
 
     return wrapper
-
-
-# 股票代码校验
-# --------------------------------------------------------------------
-def code_verify(code):
-    """股票代码校验"""
-    if len(code) != 6:
-        return False, "股票代码长度为6，请检查"
-    s = code[0]
-    if s not in ["6", '3', '0']:
-        return False, "A股代码必须以6/3/0开头，请检查"
-    return True, '代码正确'
 
 
 # 提取pdf中的文本

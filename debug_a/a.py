@@ -115,5 +115,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    after_close_report()
+    # main()
 
