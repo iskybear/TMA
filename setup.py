@@ -8,8 +8,7 @@ setup(
     name=tma.__name__,
     version=tma.__version__,
     keywords=(
-        "A股", "TuShare", "交易数据分析", "三级股票池", "仿真交易",
-        "A股数据采集"
+        "A股", "TuShare", "交易数据分析", "A股数据分析"
     ),
     description="Tools for Market A - A股工具集",
     long_description="专为中国A股设计开发的工具集，着重点是交易数据获取和分析。我是一只菜鸟，对A股"
@@ -23,7 +22,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "tushare", "pandas", "requests", "zb", "numpy",
-        "bs4", "jieba"
+        "bs4", "jieba", "requests_html", "textrank4zh", 'fuzzywuzzy'
     ],
     python_requires=">=3",
     entry_points={}
