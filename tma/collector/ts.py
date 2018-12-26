@@ -214,12 +214,6 @@ def get_hist_market(date):
     return hm
 
 
-# 融资融券
-# --------------------------------------------------------------------
-# tushare接口： sh_margins | sh_margin_details 
-#              sz_margins | sz_margin_details
-
-
 def get_news(start_date, end_date):
     """
     如果是某一天的数据，可以输入日期 20181120 或者 2018-11-20，

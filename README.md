@@ -12,7 +12,7 @@
 * 卸载 - `pip uninstall tma`
 * 更新 - `pip install --upgrade tma`
 
-### 基于TFIDF的文档排序模型
+### 基于 TFIDF 的文档排序模型
 
 ```python
 from tma.collector import xhn
@@ -33,113 +33,32 @@ print(ranker.top30)
 ranker.rank(top=3)
 ```
 
-### A股交易日历
+### 基于 TextRank 的新闻联播自动摘要抽取
 
-A股交易日历引用自Tushare，另外自己实现了几个函数，使用方法如下：
-
-* 查看完整的交易日历
-```python
-from tma import trade_calendar
-
-print(trade_calendar)
-```
-
-* 获取某一个交易日前后N个交易日的日期
-``` python
-from tma import get_recent_trade_days
-
-after_10 = get_recent_trade_days("2018-07-03", 10)
-before_10 = get_recent_trade_days("2018-07-03", -10)
-```
-
-* 判断某一天是不是交易日
-``` python
-from tma import is_trade_day
-
-day = "2018-07-03"
-if is_trade_day(day):
-    print("%s 是交易日" % day)
-```
-
-* 判断当前是否是交易时间
-``` python
-from tma import is_in_trade_time
-
-if is_in_trade_time():
-    print("当前是交易时间")
-```
-
-* 另外封装了一个Calendar类
-```python
-from tma import Calendar
-
-c = Calendar()
-
-# 判断当前是不是交易时间
-if c.is_trade_time():
-    print("当前是交易时间")
-
-# 判断某一天是不是交易日
-d = "2018-07-13"
-if c.is_trade_day(d):
-    print("%s 是交易日" % d)
-
-# 获取最近n个交易日
-c.recent_trade_days(-3)
-c.recent_trade_days(date='2018-09-10', n=3)
-```
-
-### 新华网首页头条获取
-
-新华网`http://www.xinhuanet.com/`首页头条通常都是一些国内外大事。
+新闻联播数据来自 [Tushare Pro](https://tushare.pro/)，
+[点击注册](https://tushare.pro/register?reg=7)，在【个人主页】可以查看接口token。
 
 ```python
-from tma.collector.xhn import HomePage
+# 首先设置 tushare pro 的接口token
+# 如果之前已经使用过 tushare pro，并且设置过接口token，可以省略这一步
+import tushare as ts
+ts.set_token("**************************")
 
-hp = HomePage()
+from tma.analyst.news import cctv_abstract
 
-# 获取头条文章列表 [url, title, pub_date]
-a_list = hp.get_article_list()
-
-# 获取头条文章中发布日期为今天的文章内容
-articles = hp.get_articles()
-
-# 获取头条文章中发布日期为recent_days的文章内容
-recent_days = ['2018-07-15', '2018-07-14', '2018-07-13']
-articles = hp.get_articles(recent_days)
+abstract = cctv_abstract(date='20181124')
+print(abstract)
 ```
 
-### 获取上海证券交易所的上证系列指数行情
-上证系列指数包含214个指数，共有为10个类别，分别是：定制指数、风格指数、成份指数、
-主题指数、债券指数、策略指数、重点指数、基金指数、综合指数、行业指数。
-
-关于上证系列指数的相关信息，请点击查看：
-* [上证系列指数列表](http://www.sse.com.cn/market/sseindex/indexlist/)
-* [上证系列指数计算与维护细则](http://www.sse.com.cn/market/sseindex/calculation/c/sse_indices_cal_and_main_cn.pdf)
-
-上证系列指数行情获取方法如下：
-```python
-from tma.collector import get_sh_indexes
-
-sh_indexes = get_sh_indexes()
 ```
-
-
-## 版本更新记录
-> 所有功能的添加都是针对A股，没有考虑其他市场。
-
-### v 0.1.0
-
-* pub_date: 2018-07-15
-* 新增功能 - 三级股票池 - `tma.pool.StockPool`
-* 新增功能 - 虚拟仿真交易账户 - `tma.account.Account`
-* 新增功能 - tushare数据接口封装 - `tma.collector.ts`
-* 新增功能 - 获取上海证券交易所所有指数的实时行情 - `tma.collector.sse.get_sh_indexes`
-* 新增功能 - 新华网首页头条新闻采集 - `tma.collector.xhn.HomePage`
-* 新增功能 - 雪球数据采集：个股评论、热门组合 - `tma.collector.xueqiu`
-* 新增功能 - A股全市场单个交易日的指标体系 - `tma.indicator.market.MarketIndicator`
-* 新增功能 - 以日为更新周期的个股指标体系 - `tma.indicator.market.ShareDayIndicator`
-* 新增功能 - A股交易日历 - `tma.utils.Calendar`
-* 新增功能 - 预警消息推送：server酱、邮件发送 - `tma.sms`
-* 新增功能 - 监控单只股票 涨停板买一挂单金额 / 跌停板卖一挂单金额 - `tma.monitor.single.sm_limit`
-
+(1) 22日，在国家主席习近平对西班牙进行国事访问前夕，由中国国务院新闻办公室等主办的《习近平谈治国理政》中西读者会、中国改革开放40周年暨经济发展研讨会在西班牙马德里举行。
+(2) 委员长会议组成人员认为，习近平总书记的重要讲话深刻阐述了发展新一代人工智能的重要意义、核心问题、关键举措，并专门就人工智能相关法律问题作出指示，不仅为新时代科技创新和人工智能发展指明了方向、作出了部署，也对人大及其常委会助推我国新一代人工智能健康发展提出了具体要求。
+(3) 山西省作为全国最大的焦炭生产基地，为了实现协同推动经济高质量发展和生态环境高水平保护，当地以环保倒逼，加速传统产业转型升级。
+(4) 胡安所说的改变源于四年前，“义新欧”班列开通了9条国际线路，其中，义乌至西班牙马德里的班列是世界上运输线路最长的国际班列，沿途经过的许多国家给胡安的事业带来了新的商机，同时，“义新欧”班列的开通也吸引着越来越多的外商来到义乌。
+(5) “广西生态优势金不换”，党的十八大以来，广西综合施策，通过河道治理、截污治污、河道补水、海绵城市建设等，持续改善水环境，目前国控断面优良率保持在96.2%以上，让居民在家门口就能收获幸福感。
+(6) 中欧班列开通后，他可以采购的不仅仅有中国商品，还有这些云集义乌，来自100多个国家和地区的十万多种国际特色商品。
+(7) 全国人大及其常委会的立法、监督等工作，也要围绕实现这一目标谋划和推进，推动完善科技体制机制，助力攻克关键核心技术，促进科技成果加快转化应用，推动建设一流科技人才队伍，着力提升人工智能等领域的自主创新能力，强化科技创新的战略支撑作用。
+(8) 要立足于自主创新，准确把握世界科技发展大势，直面问题、迎难而上，推动我国科技和产业实现跨越发展。
+(9) 四年间，义乌铁路口岸实行一体化通关，“义新欧”班列在沿线设立了5个物流分拨点、8个海外仓，还推进了“一带一路”捷克站、华沙中国小商品城市场和中白工业园区等项目建设。
+(10) 全国人大常委会委员长会议组成人员24日进行专题学习，学习习近平总书记在中央政治局第九次集体学习时的重要讲话，围绕人大立法监督工作保障和规范人工智能发展进行学习讨论，栗战书委员长主持并讲话。
+```

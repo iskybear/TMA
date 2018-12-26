@@ -14,6 +14,7 @@ from requests_html import HTMLSession
 from zb.crawlers.utils import get_header
 import re
 import pandas as pd
+import time
 
 
 headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -84,7 +85,8 @@ def get_ths_plates():
                 "name": a.text,
                 "code": url.strip("/").split('/')[-1],
                 "url": url,
-                "kind": plate_kinds[kind]
+                "kind_zh": plate_kinds[kind],
+                "kind_en": kind
             }
             plates.append(plate)
 
@@ -172,14 +174,17 @@ def get_plate_shares(plate_code, kind='gn'):
         # table = html.find('table', {'class': "m-table m-pager-table"}).text.strip()
         table = html.text.strip()
         cells = table.split("\n")[:-1]
-        total_pages = int(table.split("\n")[-1].split("/")[1])
-        del cells[14]
+        try:
+            total_pages = int(table.split("\n")[-1].split("/")[1])
+        except:
+            return pd.DataFrame(results, columns=col_names)
 
+        del cells[14]
+        col_names = [x.strip() for x in cells[0: 14]]
         col_nums = 14
         row_nums = int(len(cells) / col_nums)
-        col_names = [x.strip() for x in cells[0: 14]]
         for x in range(1, row_nums):
-            results.append(cells[x * col_nums + 2: (x + 1) * col_nums - 1])
+            results.append(cells[x * col_nums: (x + 1) * col_nums])
 
         # 尾页退出
         if i > total_pages:

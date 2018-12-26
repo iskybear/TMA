@@ -29,7 +29,7 @@ class KlineAnalyst:
     monthly - https://tushare.pro/document/2?doc_id=145
     """
 
-    def __init__(self, ts_code, start=None, end=None, freq='60min'):
+    def __init__(self, ts_code, start=None, end=None, freq='60min', cache_interval=12*60*60):
         """
 
         :param ts_code: str
@@ -40,6 +40,8 @@ class KlineAnalyst:
             结束时间，如 20181223
         :param freq: str
             K线级别，可选值 [1min, 5min, 15min, 30min, 60min, D, W, M]
+        :param cache_interval: int
+            数据缓存间隔，单位：秒，默认为 12*60*60
         """
         self.ts_code = ts_code
         self.start = start
@@ -49,7 +51,7 @@ class KlineAnalyst:
         # 缓存文件
         self.pkl_cache = os.path.join(cache_path, "%s.%s.pkl" % (ts_code, freq))
         if os.path.exists(self.pkl_cache) and \
-                time.time() - os.path.getmtime(self.pkl_cache) < 12 * 60 * 60:
+                time.time() - os.path.getmtime(self.pkl_cache) < cache_interval:
             self.kline, self.results = pickle.load(open(self.pkl_cache, 'rb'))
         else:
             self._get_kline()
@@ -142,6 +144,28 @@ class KlineAnalyst:
                        "根据资金量的大小选择合适的K线级别，通常使用60分钟线。"
         })
 
+    def turning(self):
+        """分析该级别 K线 的走势，分别对应的是买入（持有），还是卖出（空仓）
+
+        均线买点： ma10*1.02 > ma5 > ma10*0.99
+        MACD买点：macd柱子大于等于0
+        """
+        last_k = self.kline.iloc[-1, :]
+
+        if last_k['close_ma10']*1.02 > last_k['close_ma5'] > last_k['close_ma10']*0.99:
+            ma_point = True
+        else:
+            ma_point = False
+
+        macd_tip = [float(x) for x in self.results.R101.value.split(", ")]
+        if last_k['close_macd_hist'] >= 0 and macd_tip[-1] > macd_tip[-2]:
+            macd_point = True
+        else:
+            macd_point = False
+
+        point = ma_point and macd_point
+        return point
+
     def results2json(self):
         return json.loads(json.dumps(self.results, ensure_ascii=False))
 
@@ -171,5 +195,30 @@ def get_ma5_over_ma10_shares(freq, start, end):
     print("在 %s K线级别上，MA5 > MA10 的股票数量共有 %i，占比 %.4f" %
           (freq, len(results), len(results)/len(shares)))
     return results
+
+
+def get_shares_at_turning(freq, start, end):
+    """获取A股市场全部股票在某个K线级别上，MA5位于MA10上方的股票数量
+
+    :param freq: str
+        K线级别，可选值 [1min, 5min, 15min, 30min, 60min, D, W, M]
+    :param start: str
+        开始日期，如 20181201
+    :param end: str
+        结束日期，如 20181223
+    :return: list
+    """
+    shares = ts_pro.stock_basic(list_status='L', fields='ts_code,name')
+    results = []
+    for ts_code in tqdm(shares['ts_code'], desc="%s selector" % freq):
+        try:
+            ka = KlineAnalyst(ts_code=ts_code, start=start, end=end, freq=freq)
+            point = ka.turning()
+            if point:
+                results.append(ts_code)
+        except:
+            print("fail", ts_code)
+    return results
+
 
 
